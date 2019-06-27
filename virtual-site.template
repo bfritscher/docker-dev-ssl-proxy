@@ -1,27 +1,64 @@
-map ${DOLLAR}http_upgrade ${DOLLAR}connection_upgrade {
+map $http_upgrade $connection_upgrade {
   default upgrade;
-  ''  close;
+  '' close;
 }
+
 server {
   listen 443 ssl;
   ssl_certificate /ssl/cert.pem;
   ssl_certificate_key /ssl/key.pem;
   
   location / {
-    proxy_pass ${PROXY_ADDRESS};
+    proxy_pass %PROXY_ADDRESS%;
   }
   
-  location /socket.io {
-    proxy_pass ${PROXY_ADDRESS}/socket.io;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade ${DOLLAR}http_upgrade;
-    proxy_set_header Connection ${DOLLAR}connection_upgrade;
+  # Confirmed Socket.io works
+  location /socket.io/ {
+    proxy_pass %PROXY_ADDRESS%/socket.io/;
+    
+    proxy_redirect off;
+
+    proxy_http_version      1.1;
+
+    proxy_set_header        Upgrade                 $http_upgrade;
+    proxy_set_header        Connection              "upgrade";
+
+    proxy_set_header        Host                    $host;
+    proxy_set_header        X-Real-IP               $remote_addr;
+    proxy_set_header        X-Forwarded-For         $proxy_add_x_forwarded_for;
   }
 
-  location /sockjs-node {
-    proxy_pass ${PROXY_ADDRESS}/sockjs-node;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade ${DOLLAR}http_upgrade;
-    proxy_set_header Connection ${DOLLAR}connection_upgrade;
+  # Verdict is out for this one
+  # @see https://stackoverflow.com/questions/40516288/webpack-dev-server-with-nginx-proxy-pass/40549432
+  location /sockjs-node/ {
+    proxy_pass %PROXY_ADDRESS%/sockjs-node/;
+
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $host;  # pass the host header - http://wiki.nginx.org/HttpProxyModule#proxy_pass
+
+    proxy_http_version 1.1;  # recommended with keepalive connections - http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_http_version
+
+    # WebSocket proxying - from http://nginx.org/en/docs/http/websocket.html
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+
+    # @see https://stackoverflow.com/questions/36488688/ngnix-upstream-prematurely-closed-connection-while-reading-response-header-from
+    proxy_read_timeout 300s;
+    proxy_connect_timeout 75s;
+  }
+
+  location /ws-proxy/ {
+    proxy_pass %PROXY_ADDRESS%/ws-proxy/;
+
+    proxy_redirect off;
+
+    proxy_http_version      1.1;
+
+    proxy_set_header        Upgrade                 $http_upgrade;
+    proxy_set_header        Connection              "upgrade";
+
+    proxy_set_header        Host                    $host;
+    proxy_set_header        X-Real-IP               $remote_addr;
+    proxy_set_header        X-Forwarded-For         $proxy_add_x_forwarded_for;
   }
 }
