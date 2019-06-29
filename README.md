@@ -18,7 +18,7 @@ Be sure to change PROXY_ADDRESS to wherever you are proxying to.
 docker run --net=host -e PROXY_ADDRESS="http://localhost:8080" docker-dev-ssl-proxy
 ```
 
-Then navigate to https://localhost in your browser.
+Then navigate to https://localhost in your browser (the --net=host option in the startup binds the container directly to your localhost).
 
 Note that WebSocket proxying is set to the /socket.io path. At this time, you'll need to update virtual-site.template manually if you wish to change this path.
 

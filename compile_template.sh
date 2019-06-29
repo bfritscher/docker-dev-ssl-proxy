@@ -2,6 +2,7 @@
 
 #!/bin/sh
 
+# Overwrite the virtual-site.template w/ env PROXY_ADDRESS
 # @see https://stackoverflow.com/questions/584894/environment-variable-substitution-in-sed
 # @see https://www.nginx.com/blog/websocket-nginx/
 sed -e "s|%PROXY_ADDRESS%|${PROXY_ADDRESS}|g" virtual-site.template

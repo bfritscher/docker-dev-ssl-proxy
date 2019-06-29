@@ -3,16 +3,23 @@ map $http_upgrade $connection_upgrade {
   '' close;
 }
 
+# Speech-to-text proxy server
+# upstream stt-socket {
+  # server stt-socket:8888;
+  # server http://127.0.0.1:8888;
+# }
+
 server {
   listen 443 ssl;
   ssl_certificate /ssl/cert.pem;
   ssl_certificate_key /ssl/key.pem;
   
+  # Main proxy
   location / {
     proxy_pass %PROXY_ADDRESS%;
   }
   
-  # Confirmed Socket.io works
+  # Socket.io proxy
   location /socket.io/ {
     proxy_pass %PROXY_ADDRESS%/socket.io/;
     
@@ -29,6 +36,7 @@ server {
     proxy_set_header        X-Forwarded-For         $proxy_add_x_forwarded_for;
   }
 
+  # Proxy for React sockjs-node
   # @see https://stackoverflow.com/questions/40516288/webpack-dev-server-with-nginx-proxy-pass/40549432
   location /sockjs-node/ {
     proxy_pass %PROXY_ADDRESS%/sockjs-node/;
@@ -46,8 +54,10 @@ server {
     proxy_set_header        X-Forwarded-For         $proxy_add_x_forwarded_for;
   }
 
-  location /ws-proxy/ {
-    proxy_pass %PROXY_ADDRESS%/ws-proxy/;
+  # Proxy for prototype STT
+  location /stt-socket/ {
+    # proxy_pass http://stt-socket;
+    proxy_pass http://127.0.0.1:8888/stt-socket/;
 
     proxy_redirect off;
 
