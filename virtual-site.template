@@ -56,12 +56,11 @@ server {
 
   # Proxy for prototype STT
   # location /stt-socket/ {
-  # TODO: Update w/ container address
-  #  proxy_pass http://127.0.0.1:8888/stt-socket/;
+  #  proxy_pass http://stt-socket:8888/stt-socket/;
   #
   #  proxy_redirect off;
   #
-  # proxy_http_version      1.1;
+  #  proxy_http_version      1.1;
   #
   #  proxy_set_header        Upgrade                 $http_upgrade;
   #  proxy_set_header        Connection              "upgrade";
