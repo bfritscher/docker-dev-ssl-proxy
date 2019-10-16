@@ -3,12 +3,6 @@ map $http_upgrade $connection_upgrade {
   '' close;
 }
 
-# Speech-to-text proxy server
-# upstream stt-socket {
-  # server stt-socket:8888;
-  # server http://127.0.0.1:8888;
-# }
-
 server {
 	listen 80 default_server;
 	listen [::]:80 default_server;
