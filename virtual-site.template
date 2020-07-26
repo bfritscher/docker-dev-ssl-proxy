@@ -8,18 +8,19 @@ server {
   ssl_certificate_key /ssl/key.pem;
   
   location / {
-    proxy_pass ${PROXY_ADDRESS};
+    proxy_pass http://frontend:3000; # Only during development
   }
-  
-  location /socket.io {
-    proxy_pass ${PROXY_ADDRESS}/socket.io;
+
+  # Only during development
+  location /sockjs-node {
+    proxy_pass http://frontend:3000/sockjs-node;
     proxy_http_version 1.1;
     proxy_set_header Upgrade ${DOLLAR}http_upgrade;
     proxy_set_header Connection ${DOLLAR}connection_upgrade;
   }
 
-  location /sockjs-node {
-    proxy_pass ${PROXY_ADDRESS}/sockjs-node;
+  location /socket.io {
+    proxy_pass http://backend:3001/socket.io;
     proxy_http_version 1.1;
     proxy_set_header Upgrade ${DOLLAR}http_upgrade;
     proxy_set_header Connection ${DOLLAR}connection_upgrade;
