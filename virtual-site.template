@@ -19,6 +19,7 @@ server {
     proxy_set_header Connection ${DOLLAR}connection_upgrade;
   }
 
+  # TODO: Is this still used?
   location /api/ {
     proxy_pass http://backend:3001/api/;
   }
@@ -28,5 +29,9 @@ server {
     proxy_http_version 1.1;
     proxy_set_header Upgrade ${DOLLAR}http_upgrade;
     proxy_set_header Connection ${DOLLAR}connection_upgrade;
+  }
+
+  location /ytdl/ {
+    proxy_pass http://yt_dl_server:3000/;
   }
 }
