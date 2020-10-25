@@ -30,8 +30,4 @@ server {
     proxy_set_header Upgrade ${DOLLAR}http_upgrade;
     proxy_set_header Connection ${DOLLAR}connection_upgrade;
   }
-
-  location /ytdl/ {
-    proxy_pass http://yt_dl_server:3000/;
-  }
 }
