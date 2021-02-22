@@ -19,9 +19,8 @@ server {
     proxy_set_header Connection ${DOLLAR}connection_upgrade;
   }
 
-  # TODO: Is this still used?
-  location /api/ {
-    proxy_pass http://backend:3001/api/;
+  location /api/generate-avatar {
+    proxy_pass http://avatar_server:3000/;
   }
 
   location /socket.io {
