@@ -6,6 +6,9 @@ server {
   listen 443 ssl;
   ssl_certificate /ssl/cert.pem;
   ssl_certificate_key /ssl/key.pem;
+
+  # See: https://web.dev/origin-agent-cluster
+  add_header Origin-Agent-Cluster ?1;
   
   location / {
     proxy_pass http://frontend:3000; # Only during development
