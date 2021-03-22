@@ -1,31 +1,47 @@
-map ${DOLLAR}http_upgrade ${DOLLAR}connection_upgrade {
-  default upgrade;
-  ''  close;
-}
 server {
-  listen 443 ssl;
-  ssl_certificate /ssl/cert.pem;
-  ssl_certificate_key /ssl/key.pem;
+	listen 443 ssl;
+	ssl_certificate /ssl/cert.pem;
+	ssl_certificate_key /ssl/key.pem;
 
-  # See: https://web.dev/origin-agent-cluster
-  add_header Origin-Agent-Cluster ?1;
-  
-  location / {
-    proxy_pass http://frontend:3000; # Only during development
-  }
+	# See: https://web.dev/origin-agent-cluster
+	add_header Origin-Agent-Cluster ?1;
 
-  # Only during development
-  location /sockjs-node {
-    proxy_pass http://frontend:3000/sockjs-node;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade ${DOLLAR}http_upgrade;
-    proxy_set_header Connection ${DOLLAR}connection_upgrade;
-  }
+	location / {
+		proxy_pass http://frontend:3000;
 
-  location /socket.io {
-    proxy_pass http://backend:3001/socket.io;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade ${DOLLAR}http_upgrade;
-    proxy_set_header Connection ${DOLLAR}connection_upgrade;
-  }
+		proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Real-Port $remote_port;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+	}
+
+	# Only during development
+	location /sockjs-node {
+		proxy_pass http://frontend:3000/sockjs-node;
+
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection "upgrade";
+
+		proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Real-Port $remote_port;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+	}
+
+	location /socket.io {
+		proxy_pass http://backend:3001/socket.io;
+
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection "upgrade";
+
+		proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Real-Port $remote_port;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+	}
 }
