@@ -1,10 +1,9 @@
-version: '3.1'
+version: "3.1"
 services:
-
   proxy:
     build: .
-    network_mode: "host" # Using host network here so we can proxy to localhost addresses
-    environment:
-      - PROXY_ADDRESS=http://localhost:8080 # Important, don't use quotations here, or it may break the template
+    # network_mode: "host" # Using host network here so we can proxy to localhost addresses
+    # environment:
+    #  - PROXY_ADDRESS=http://localhost:8080 # Important, don't use quotations here, or it may break the template
     ports:
       - 443:443
