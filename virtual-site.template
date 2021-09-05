@@ -1,27 +1,43 @@
-map ${DOLLAR}http_upgrade ${DOLLAR}connection_upgrade {
-  default upgrade;
-  ''  close;
-}
 server {
   listen 443 ssl;
   ssl_certificate /ssl/cert.pem;
   ssl_certificate_key /ssl/key.pem;
   
   location / {
-    proxy_pass ${PROXY_ADDRESS};
+    proxy_pass http://reshell-host.bridge-prototype:3002;
+
+    proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Real-Port $remote_port;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
   }
   
   location /socket.io {
-    proxy_pass ${PROXY_ADDRESS}/socket.io;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade ${DOLLAR}http_upgrade;
-    proxy_set_header Connection ${DOLLAR}connection_upgrade;
+    proxy_pass http://reshell-host.bridge-prototype:3002/socket.io;
+    
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection "upgrade";
+
+		proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Real-Port $remote_port;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
   }
 
   location /sockjs-node {
-    proxy_pass http://reshell-frontend/sockjs-node;
+    proxy_pass http://reshell-frontend:3001/sockjs-node;
+    
     proxy_http_version 1.1;
-    proxy_set_header Upgrade ${DOLLAR}http_upgrade;
-    proxy_set_header Connection ${DOLLAR}connection_upgrade;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection "upgrade";
+
+		proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Real-Port $remote_port;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
   }
 }
