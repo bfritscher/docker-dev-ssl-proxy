@@ -7,7 +7,7 @@ server {
 	add_header Origin-Agent-Cluster ?1;
 
 	location / {
-		proxy_pass http://reshell-host.bridge-prototype:3002;
+		proxy_pass http://reshell:3002;
 
 		proxy_set_header X-Forwarded-Proto $scheme;
 		proxy_set_header Host $host;
@@ -18,7 +18,7 @@ server {
 
 	# Only during development
 	location /sockjs-node {
-		proxy_pass http://reshell-frontend:3001/sockjs-node;
+		proxy_pass http://reshell:3001/sockjs-node;
 
 		proxy_http_version 1.1;
 		proxy_set_header Upgrade $http_upgrade;
@@ -32,7 +32,7 @@ server {
 	}
 
 	location /socket.io {
-		proxy_pass http://reshell-host.bridge-prototype:3002/socket.io;
+		proxy_pass http://reshell:3002/socket.io;
 
 		proxy_http_version 1.1;
 		proxy_set_header Upgrade $http_upgrade;
